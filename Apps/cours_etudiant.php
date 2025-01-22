@@ -1,15 +1,20 @@
 <?php
+session_start();
 require_once '../classes/database.php';
 require_once '../classes/categories.php';
 require_once '../classes/cours.php';
+require_once '../classes/inscriptions.php';
 
+$user_id=$_SESSION['user_id'];
 $limit = 3;
 $pageActuelle = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($pageActuelle - 1) * $limit;
 $categorie_id=$_GET['categorie_id'];
 $totalCours=cours::CountCours($categorie_id);
-$cours = cours::getElementsPaginé($limit,$offset,$categorie_id);
+$cours = cours::getAllElementsPaginé($limit,$offset,$categorie_id);
 $totalPages = ceil($totalCours / $limit);
+
+// $dejaInscré=inscriptions::dejaInscré($cours_id);
 ?>
 
 <!DOCTYPE html>
@@ -28,17 +33,17 @@ $totalPages = ceil($totalCours / $limit);
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <i class="fas fa-graduation-cap text-2xl mr-2"></i>
-                    <span class="text-2xl font-bold">Youdemy</span>
+                    <span class="text-2xl font-bold">EduLearn</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="../Apps/user_accueil.php" class="hover:text-purple-200">Accueil</a>
-                    <a href="#" class="hover:text-purple-200">Cours</a>
-                    <a href="#" class="hover:text-purple-200">À propos</a>
-                    <a href="#" class="hover:text-purple-200">Contact</a>
+                    <a href="../Apps/mesCours.php" class="hover:text-purple-200">Mes cours</a>
+                    <a href="#" class="hover:text-purple-200">Catalogue</a>
+                    <a href="#" class="hover:text-purple-200">Profil</a>
                 </div>
-                <div class="flex space-x-4">
-                    <a href="login.html" class="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition">Connexion</a>
-                    <a href="signup.html" class="px-4 py-2 bg-white text-purple-800 rounded-lg hover:bg-purple-100 transition">Inscription</a>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>
+        <p>Etudiant.<?php echo htmlspecialchars($_SESSION["user_nom"]); ?></p>
+      <?php endif; ?></span>
                 </div>
             </div>
         </div>
@@ -57,32 +62,37 @@ $totalPages = ceil($totalCours / $limit);
         
         <div class="grid md:grid-cols-3 gap-8">
             <!-- Course 1: HTML/CSS -->
-             <?php foreach($cours as $cour ):?>
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="h-48 bg-gradient-to-r from-pink-400 to-pink-600 relative">
-                    <img src="/api/placeholder/400/200" alt="HTML CSS" class="w-full h-full object-cover opacity-20">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <i class="fab fa-html5 text-6xl text-white mr-4"></i>
-                        <i class="fab fa-css3-alt text-6xl text-white"></i>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <h2 class="text-2xl font-bold text-gray-800"><?= htmlspecialchars($cour['cours_nom'])?></h2>
-                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Débutant</span>
-                    </div>
-                    <p class="text-gray-600 mb-4"><?= htmlspecialchars($cour['cours_description'])?></p>
-                    <ul class="text-gray-600 mb-6 space-y-2">
-                        <li class="flex items-center"><i class="fas fa-clock mr-2 text-blue-500"></i>20 heures de cours</li>
-                        <li class="flex items-center"><i class="fas fa-book mr-2 text-blue-500"></i>15 chapitres</li>
-                        <li class="flex items-center"><i class="fas fa-user-graduate mr-2 text-blue-500"></i>2,500 étudiants</li>
-                    </ul>
-                    <a href="#" class="block text-center bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
-                        Commencer le cours
-                    </a>
-                </div>
+            <?php foreach ($cours as $cour): ?>
+    <?php $dejaInscre = inscriptions::dejaInscré($cour['cours_id'],$_SESSION['user_id']); ?>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="h-48 bg-gradient-to-r from-pink-400 to-pink-600 relative">
+            <img src="/api/placeholder/400/200" alt="HTML CSS" class="w-full h-full object-cover opacity-20">
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fab fa-html5 text-6xl text-white mr-4"></i>
+                <i class="fab fa-css3-alt text-6xl text-white"></i>
             </div>
-            <?php endforeach;?>
+        </div>
+        <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+                <h2 class="text-2xl font-bold text-gray-800"><?= htmlspecialchars($cour['cours_nom']) ?></h2>
+                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Débutant</span>
+            </div>
+            <p class="text-gray-600 mb-4"><?= htmlspecialchars($cour['cours_description']) ?></p>
+            <h6 class="text-xl text-gray-800" style="margin-bottom: 10px;">Enseignant : <?= htmlspecialchars($cour['user_nom']) ?></h6>
+            
+            <!-- Afficher le bouton ou le message en fonction de l'inscription -->
+            <?php if ($dejaInscre): ?>
+                <div class="text-green-500 font-bold">Inscrit</div>
+            <?php else: ?>
+                <a href="../Apps/inscription_cours.php?cours_id=<?= htmlspecialchars($cour['cours_id']) ?>&user_id=<?= $user_id ?>" 
+                   class="block text-center bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                    S'inscrire au cours
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php endforeach; ?>
+
             <div class="pagination">
         <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
             <a href="?categorie_id=<?= $categorie_id ?>&page=<?= $i ?>" class="">

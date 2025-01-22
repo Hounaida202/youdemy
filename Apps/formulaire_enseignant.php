@@ -3,22 +3,55 @@ session_start();
 require_once '../classes/database.php';
 require_once '../classes/cours.php';
 require_once '../classes/user.php';
+require_once '../classes/tags.php';
+require_once '../classes/cours-tags.php';
 
-$cours_id=$_GET['cours_id'];
-// $cours=cours::afficherPourUpdate($cours_id);
 
-if($_SERVER['REQUEST_METHOD']==='POST'){
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cours_image = $_POST['cours_image'];
     $cours_nom = $_POST['cours_nom'];
     $cours_description = $_POST['cours_description'];
-    
+    $categorie_id = $_GET['categorie_id'];
+    $user_id = $_GET['user_id'];
     $cours_type = $_POST['cours_type'];
     $cours_lien = $_POST['cours_lien'];
+    $tags_selected = isset($_POST['tags']) ? $_POST['tags'] : [];
 
-    $cours=cours::UpdateCours($cours_id, $cours_image, $cours_nom, $cours_description, $cours_type, $cours_lien);
-    header("Location: ../apps/enseignant_page.php");
-    exit;}
+    // Vérification du lien
+    $isValid = false;
+    if ($cours_type === 'video') {
+        $isValid = preg_match('/(youtube\.com|vimeo\.com)/i', $cours_lien);
+    } elseif ($cours_type === 'document') {
+        $isValid = preg_match('/\.(pdf|docx|doc|txt)$/i', $cours_lien);
+    }
+
+    if ($isValid) {
+        // Insérer le cours
+        $cours_id = cours::insertcours($cours_image, $cours_nom, $cours_description, $categorie_id, $user_id, $cours_type, $cours_lien);
+
+        if ($cours_id) {
+            if (!empty($tags_selected)) {
+                foreach ($tags_selected as $tag_id) {
+                    cours_tags::insertCoursTag($cours_id, $tag_id);
+                }
+            }
+        } else {
+            echo "Erreur : L'insertion du cours a échoué.";
+        }
+    } else {
+        echo "Le lien fourni ne correspond pas au type sélectionné.";
+    }
+}
+
+
+// Récupération de tous les tags
+$tags = Tags::getAlltags();
+
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -60,21 +93,21 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 <!-- Image URL -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Lien de l'image</label>
-                    <input name="cours_image" type="url" value="" placeholder="https://example.com/image.jpg" 
+                    <input name="cours_image" type="url" placeholder="https://example.com/image.jpg" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 </div>
 
                 <!-- Titre -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Titre du cours</label>
-                    <input name="cours_nom" type="text" placeholder="Entrez le titre du cours" value=""
+                    <input name="cours_nom" type="text" placeholder="Entrez le titre du cours" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 </div>
 
                 <!-- Description -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    <textarea name="cours_description"  rows="4" placeholder="Décrivez votre cours" 
+                    <textarea name="cours_description" rows="4" placeholder="Décrivez votre cours" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"></textarea>
                 </div>
 
@@ -91,11 +124,25 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 <!-- Lien du contenu -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Lien du contenu</label>
-                    <input name="cours_lien" type="url" value="" placeholder="https://example.com/content" 
+                    <input name="cours_lien" type="url" placeholder="https://example.com/content" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 </div>
-                <button name="sauvegarder" type="submit" class="w-full bg-purple-800 text-white py-3 px-4 rounded-lg hover:bg-purple-900 transition duration-200 flex items-center justify-center">
-                     Sauvegarder La modification
+                <!-- ----tags---- -->
+                <details class="border border-gray-300 rounded-lg p-4">
+    <summary class="text-sm font-medium text-gray-700 cursor-pointer">Sélectionnez les tags</summary>
+    <div class="mt-4 grid grid-cols-2 gap-4">
+        <?php foreach ($tags as $tag): ?>
+        <label class="flex items-center space-x-2">
+            <input type="checkbox" name="tags[]" value="<?= htmlspecialchars($tag['tag_id']) ?>" class="rounded text-purple-600 focus:ring-purple-500">
+            <span class="text-sm"><?= htmlspecialchars($tag['tag_nom']) ?></span>
+        </label>
+        <?php endforeach; ?>
+    </div>
+</details>
+
+                <!-- --submit---- -->
+                <button type="submit" class="w-full bg-purple-800 text-white py-3 px-4 rounded-lg hover:bg-purple-900 transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i> Ajouter le cours
                 </button>
             </div>
         </form>

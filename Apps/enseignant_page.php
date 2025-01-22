@@ -2,29 +2,15 @@
 session_start();
 require_once '../classes/database.php';
 require_once '../classes/categories.php';
-require_once '../classes/cours.php';
 
-$categorie_id=$_GET['categorie_id'];
-$user_id=$_GET['user_id'];
-
-if (isset($_POST['supprimer']) && isset($_POST['cours_id'])) {
-    $cours_id = $_POST['cours_id'];
-    $resultat = cours::deleteByIdcour($cours_id);
-}
-$mescours=Cours::afficherMescours($categorie_id,$user_id);
-
-
-
-// a comprendre
-// $mescours = array_filter($mescours, fn($obj) => $obj); 
-
+$categories=categories::getAllCategories();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduLearn - Cours Frontend</title>
+    <title>EduLearn - Dashboard Enseignant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -54,79 +40,53 @@ $mescours=Cours::afficherMescours($categorie_id,$user_id);
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-6 py-8">
-    <div class="mb-8 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-800">Mes cours</h1>
-            <a href="../Apps/formulaire_enseignant.php?user_id=<?= $user_id ?>&categorie_id=<?= $categorie_id ?>" 
-                class="bg-purple-800 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center">
-                  <i class="fas fa-plus mr-2"></i>
-                     Ajouter un cours
-            </a>
-    </div>
-        <div class="grid gap-8">
-            <!-- Cours 1 -->
-
-            <?php if($mescours):?>
-<?php foreach($mescours as $cour):?>
-
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="md:col-span-1">
-                <img src="<?php echo htmlspecialchars($cour->getImage()) ?>" alt="Tailwind" class="w-full h-full object-cover">
-            </div>
-            <div class="p-6 md:col-span-2">
-                <h2 class="text-2xl font-bold text-gray-800 mb-3"><?php echo htmlspecialchars($cour->getNom())?></h2>
-                <p class="text-gray-600 mb-4">
-                    <?php echo htmlspecialchars($cour->getDescription())?>
-                </p>
-                <div class="mb-4">
-                    <span class="text-purple-800 font-semibold">Type de contenu:</span>
-                    <span class="ml-2"><?php echo htmlspecialchars($cour->gettype())?></span>
-                </div>
-                <div class="mb-4">
-                    <span class="text-purple-800 font-semibold">Contenu:</span>
-                    <a href="<?php echo htmlspecialchars($cour->getContenu())?>" class="ml-2"><?php echo htmlspecialchars($cour->getContenu())?></a>
-                </div>
-               
-                <?php $tags = explode(",", $cour->getTags()); ?>
-
-                <div class="flex gap-2">
-                    <?php foreach($tags as $tag): ?>
-                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"><?php echo htmlspecialchars($tag)?></span>
-                    <?php endforeach; ?>
-                </div>
-
-
-
-                <form method="POST" action="" style="margin-top: 20px;" class="flex space-x-2 ">
-                    <input type="hidden" name="cours_id" value="<?php echo htmlspecialchars($cour->getId()) ?>">
-                <a href="../Apps/update_cours.php?cours_id=<?=  htmlspecialchars($cour->getId()) ?>" name="modifier" value="modifier" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition flex items-center">
-                    <i class="fas fa-edit mr-2"></i>
-                    Modifier
+    <div class="flex-grow flex">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-6 space-y-4">
+                <a href="#" class="flex items-center space-x-3 text-purple-800 font-medium">
+                    <i class="fas fa-th-large"></i>
+                    <span>Vue d'ensemble</span>
                 </a>
-                <button name="supprimer" value="supprimer" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition flex items-center">
-                    <i class="fas fa-trash-alt mr-2"></i>
-                    Supprimer
-                </button>
-                </form>
-                
+                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:text-purple-800">
+                    <i class="fas fa-book"></i>
+                    <span>Gestion des cours</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:text-purple-800">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-grow p-8">
+            <div class="mb-8 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">Mes Catégories de Cours</h1>
+               
+            </div>
+
+            <!-- Categories Grid -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Backend Category -->
+                 <?php foreach($categories as $categorie): ?>
+                <a href="../Apps/cours_enseignant.php?categorie_id=<?=htmlspecialchars($categorie->getcategorieId())?>&user_id=<?=htmlspecialchars($_SESSION['user_id'])?>" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-server text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold"><?=htmlspecialchars($categorie->getnom())?></h3>
+                    </div>
+                    <p class="text-gray-600 mb-4"><?=htmlspecialchars($categorie->getdescription())?></p>
+                    
+                 </a>
+                <?php endforeach; ?>
+
             </div>
         </div>
     </div>
-
-<?php endforeach;?>
-
-<?php else:?>
-    <?php echo "Vous n'avez posé aucun cours"?>
-<!-- <p>Vous n'avez posé aucun cours</p> -->
-<?php endif;?>
-
-
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white mt-12">
+     <!-- Footer -->
+     <footer class="bg-gray-900 text-white mt-12">
         <div class="container mx-auto px-6 py-8">
             <div class="grid md:grid-cols-4 gap-8">
                 <div>

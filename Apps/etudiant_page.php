@@ -24,14 +24,14 @@ $categories=categories::getAllCategories();
                     <span class="text-2xl font-bold">EduLearn</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#" class="hover:text-purple-200">Accueil</a>
-                    <a href="#" class="hover:text-purple-200">Cours</a>
-                    <a href="#" class="hover:text-purple-200">À propos</a>
-                    <a href="#" class="hover:text-purple-200">Contact</a>
+                    <a href="#" class="hover:text-purple-200">Mes cours</a>
+                    <a href="#" class="hover:text-purple-200">Catalogue</a>
+                    <a href="#" class="hover:text-purple-200">Profil</a>
                 </div>
-                <div class="flex space-x-4">
-                    <a href="login.html" class="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition">Connexion</a>
-                    <a href="signup.html" class="px-4 py-2 bg-white text-purple-800 rounded-lg hover:bg-purple-100 transition">Inscription</a>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>
+        <p>Etudiant.<?php echo htmlspecialchars($_SESSION["user_nom"]); ?></p>
+      <?php endif; ?></span>
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@ $categories=categories::getAllCategories();
         <!-- ---------------------------------------------------------------------------- --> 
 <?php foreach($categories as $categorie):?>
             <!-- Frontend Category -->
-            <a href="../Apps/cours_etudiant.php?categorie_id=<?=htmlspecialchars($categorie->getcategorieId())?>&user_id=<?=htmlspecialchars($_SESSION['user_id'])?>" class="group">
+            <a href="../Apps/cours_etudiant.php?categorie_id=<?=htmlspecialchars($categorie->getcategorieId())?>" class="group">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
                     <div class="h-48 bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
                         <img src="<?=htmlspecialchars($categorie->getimage())?>" alt="">

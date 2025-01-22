@@ -31,6 +31,9 @@ CREATE TABLE cours(
     FOREIGN KEY (categorie_id) REFERENCES categories(categorie_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+ALTER TABLE cours 
+ADD COLUMN cours_type ENUM('video', 'document') NOT NULL, 
+ADD COLUMN cours_contenu VARCHAR(255) NOT NULL;
 
 INSERT INTO cours (cours_image, cours_nom, cours_description, categorie_id, user_id) VALUES
 ('image1.jpg', 'Introduction à la programmation', 'Apprenez les bases de la programmation avec ce cours.', 1, 1),
@@ -43,3 +46,52 @@ INSERT INTO cours (cours_image, cours_nom, cours_description, categorie_id, user
 ('image8.jpg', 'UI/UX Design', 'Concevez des interfaces utilisateur intuitives et esthétiques.', 1, 1),
 ('image9.jpg', 'Sécurité informatique', 'Protégez vos systèmes contre les cyberattaques.', 1, 1),
 ('image10.jpg', 'Gestion de projet Agile', 'Découvrez les méthodologies Agile pour gérer vos projets.', 1, 1);
+
+
+
+CREATE TABLE tags (
+    tag_id INT AUTO_INCREMENT PRIMARY KEY,
+    tag_nom VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE cours_tags (
+    cours_tags_id INT AUTO_INCREMENT PRIMARY KEY,
+    cours_id INT NOT NULL,
+    tag_id INT NOT NULL,
+    FOREIGN KEY (cours_id) REFERENCES cours(cours_id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
+);
+
+
+INSERT INTO tags (tag_nom) 
+VALUES 
+    ('PHP'),
+    ('JavaScript'),
+    ('HTML'),
+    ('CSS'),
+    ('SQL'),
+    ('Python'),
+    ('Laravel'),
+    ('React'),
+    ('Vue.js'),
+    ('Node.js'),
+    ('Django'),
+    ('Bootstrap'),
+    ('Tailwind CSS'),
+    ('Ruby on Rails'),
+    ('Angular'),
+    ('TypeScript'),
+    ('jQuery'),
+    ('Flask'),
+    ('GraphQL'),
+    ('MongoDB');
+
+CREATE TABLE inscriptions (
+inscription_id INT AUTO_INCREMENT PRIMARY KEY,
+nom VARCHAR(255) NOT NULL,
+prenom VARCHAR(255) NOT NULL,
+cours_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (cours_id) REFERENCES cours(cours_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

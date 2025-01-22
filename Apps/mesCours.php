@@ -4,19 +4,15 @@ require_once '../classes/database.php';
 require_once '../classes/categories.php';
 require_once '../classes/cours.php';
 
-$categorie_id=$_GET['categorie_id'];
-$user_id=$_GET['user_id'];
-
+$user_id=$_SESSION['user_id'];
 if (isset($_POST['supprimer']) && isset($_POST['cours_id'])) {
     $cours_id = $_POST['cours_id'];
     $resultat = cours::deleteByIdcour($cours_id);
 }
-$mescours=Cours::afficherMescours($categorie_id,$user_id);
+$mescours=Cours::afficherMescoursStudent($user_id);
 
 
-
-// a comprendre
-// $mescours = array_filter($mescours, fn($obj) => $obj); 
+$mescours = array_filter($mescours, fn($obj) => $obj); 
 
 ?>
 <!DOCTYPE html>
@@ -38,14 +34,12 @@ $mescours=Cours::afficherMescours($categorie_id,$user_id);
                     <span class="text-2xl font-bold">Youdemy</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#" class="hover:text-purple-200">Dashboard</a>
+                    <a href="../Apps/etudiant_page.php" class="hover:text-purple-200">Catalogue</a>
                     <a href="#" class="hover:text-purple-200">Mes Cours</a>
-                    <a href="#" class="hover:text-purple-200">Étudiants</a>
-                    <a href="#" class="hover:text-purple-200">Messages</a>
                 </div>
                 <div class="flex items-center space-x-4">
                 <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>
-        <p>Prof.<?php echo htmlspecialchars($_SESSION["user_nom"]); ?></p>
+        <p>Etudiant.<?php echo htmlspecialchars($_SESSION["user_nom"]); ?></p>
       <?php endif; ?>
                     </span>
                 </div>
@@ -57,11 +51,6 @@ $mescours=Cours::afficherMescours($categorie_id,$user_id);
     <main class="flex-grow container mx-auto px-6 py-8">
     <div class="mb-8 flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-800">Mes cours</h1>
-            <a href="../Apps/formulaire_enseignant.php?user_id=<?= $user_id ?>&categorie_id=<?= $categorie_id ?>" 
-                class="bg-purple-800 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center">
-                  <i class="fas fa-plus mr-2"></i>
-                     Ajouter un cours
-            </a>
     </div>
         <div class="grid gap-8">
             <!-- Cours 1 -->
@@ -98,17 +87,7 @@ $mescours=Cours::afficherMescours($categorie_id,$user_id);
 
 
 
-                <form method="POST" action="" style="margin-top: 20px;" class="flex space-x-2 ">
-                    <input type="hidden" name="cours_id" value="<?php echo htmlspecialchars($cour->getId()) ?>">
-                <a href="../Apps/update_cours.php?cours_id=<?=  htmlspecialchars($cour->getId()) ?>" name="modifier" value="modifier" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition flex items-center">
-                    <i class="fas fa-edit mr-2"></i>
-                    Modifier
-                </a>
-                <button name="supprimer" value="supprimer" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition flex items-center">
-                    <i class="fas fa-trash-alt mr-2"></i>
-                    Supprimer
-                </button>
-                </form>
+               
                 
             </div>
         </div>
@@ -117,7 +96,7 @@ $mescours=Cours::afficherMescours($categorie_id,$user_id);
 <?php endforeach;?>
 
 <?php else:?>
-    <?php echo "Vous n'avez posé aucun cours"?>
+    <?php echo "Vous n'avez inscré dans aucun cours"?>
 <!-- <p>Vous n'avez posé aucun cours</p> -->
 <?php endif;?>
 
