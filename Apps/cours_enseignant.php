@@ -15,9 +15,6 @@ $mescours=Cours::afficherMescours($categorie_id,$user_id);
 
 
 
-// a comprendre
-// $mescours = array_filter($mescours, fn($obj) => $obj); 
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -38,10 +35,9 @@ $mescours=Cours::afficherMescours($categorie_id,$user_id);
                     <span class="text-2xl font-bold">Youdemy</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#" class="hover:text-purple-200">Dashboard</a>
+                    <a href="../Apps/enseignant_page.php" class="hover:text-purple-200">Dashboard</a>
                     <a href="#" class="hover:text-purple-200">Mes Cours</a>
-                    <a href="#" class="hover:text-purple-200">Étudiants</a>
-                    <a href="#" class="hover:text-purple-200">Messages</a>
+                    
                 </div>
                 <div class="flex items-center space-x-4">
                 <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>

@@ -3,6 +3,8 @@ session_start();
 require_once '../classes/database.php';
 require_once '../classes/categories.php';
 require_once '../classes/cours.php';
+require_once '../classes/lescours.php';
+
 require_once '../classes/inscriptions.php';
 
 $user_id=$_SESSION['user_id'];
@@ -11,8 +13,9 @@ $pageActuelle = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($pageActuelle - 1) * $limit;
 $categorie_id=$_GET['categorie_id'];
 $totalCours=cours::CountCours($categorie_id);
-$cours = cours::getAllElementsPaginé($limit,$offset,$categorie_id);
+$cours = lescours::getAllElementsPaginé($limit,$offset,$categorie_id);
 $totalPages = ceil($totalCours / $limit);
+
 
 // $dejaInscré=inscriptions::dejaInscré($cours_id);
 ?>
@@ -37,7 +40,7 @@ $totalPages = ceil($totalCours / $limit);
                 </div>
                 <div class="hidden md:flex space-x-8">
                     <a href="../Apps/mesCours.php" class="hover:text-purple-200">Mes cours</a>
-                    <a href="#" class="hover:text-purple-200">Catalogue</a>
+                    <a href="../Apps/etudiant_page.php" class="hover:text-purple-200">Catalogue</a>
                     <a href="#" class="hover:text-purple-200">Profil</a>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -63,7 +66,7 @@ $totalPages = ceil($totalCours / $limit);
         <div class="grid md:grid-cols-3 gap-8">
             <!-- Course 1: HTML/CSS -->
             <?php foreach ($cours as $cour): ?>
-    <?php $dejaInscre = inscriptions::dejaInscré($cour['cours_id'],$_SESSION['user_id']); ?>
+    <?php $dejaInscre = inscriptions::dejaInscré($cour->getId(),$_SESSION['user_id']); ?>
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="h-48 bg-gradient-to-r from-pink-400 to-pink-600 relative">
             <img src="/api/placeholder/400/200" alt="HTML CSS" class="w-full h-full object-cover opacity-20">
@@ -74,17 +77,17 @@ $totalPages = ceil($totalCours / $limit);
         </div>
         <div class="p-6">
             <div class="flex justify-between items-start mb-4">
-                <h2 class="text-2xl font-bold text-gray-800"><?= htmlspecialchars($cour['cours_nom']) ?></h2>
+                <h2 class="text-2xl font-bold text-gray-800"><?php echo htmlspecialchars($cour->getNom()) ?></h2>
                 <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Débutant</span>
             </div>
-            <p class="text-gray-600 mb-4"><?= htmlspecialchars($cour['cours_description']) ?></p>
-            <h6 class="text-xl text-gray-800" style="margin-bottom: 10px;">Enseignant : <?= htmlspecialchars($cour['user_nom']) ?></h6>
+            <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($cour->getDescription()) ?></p>
+            <h6 class="text-xl text-gray-800" style="margin-bottom: 10px;">Enseignant :  <?php echo htmlspecialchars($cour->getUsernom()) ?></h6>
             
             <!-- Afficher le bouton ou le message en fonction de l'inscription -->
             <?php if ($dejaInscre): ?>
                 <div class="text-green-500 font-bold">Inscrit</div>
             <?php else: ?>
-                <a href="../Apps/inscription_cours.php?cours_id=<?= htmlspecialchars($cour['cours_id']) ?>&user_id=<?= $user_id ?>" 
+                <a href="../Apps/inscription_cours.php?cours_id=<?php echo htmlspecialchars($cour->getid()) ?>&user_id=<?= $user_id ?>" 
                    class="block text-center bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
                     S'inscrire au cours
                 </a>
@@ -111,7 +114,7 @@ $totalPages = ceil($totalCours / $limit);
         <div class="container mx-auto px-6 py-8">
             <div class="grid md:grid-cols-4 gap-8">
                 <div>
-                    <h4 class="text-xl font-bold mb-4">EduLearn</h4>
+                    <h4 class="text-xl font-bold mb-4">Youdemy</h4>
                     <p class="text-gray-400">Plateforme d'apprentissage en ligne pour tous</p>
                 </div>
                 <div>

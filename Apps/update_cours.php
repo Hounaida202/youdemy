@@ -5,7 +5,6 @@ require_once '../classes/cours.php';
 require_once '../classes/user.php';
 
 $cours_id=$_GET['cours_id'];
-// $cours=cours::afficherPourUpdate($cours_id);
 
 if($_SERVER['REQUEST_METHOD']==='POST'){
     $cours_image = $_POST['cours_image'];

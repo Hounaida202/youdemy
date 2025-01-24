@@ -1,17 +1,14 @@
-<?php
+<?php 
 session_start();
 require_once '../classes/database.php';
-require_once '../classes/user.php';
+require_once '../classes/cours.php';
+require_once '../classes/inscriptions.php';
 
-$users=user::getEnattenteUsers();
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $id = $_POST['user_id'];
-        $status = isset($_POST['valide']) ? 'valide' : 'invalide';
-    
-        user::updateStatus($status, $id);
-        header("Location: ".$_SERVER['PHP_SELF']); 
-        exit;
-    }
+
+$user_id=$_SESSION['user_id'];
+
+$cours=cours::CountCoursEnseignant($user_id);
+$inscriptions=inscriptions::CountinscriptionsEnseignant($user_id);
 
 ?>
 <!DOCTYPE html>
@@ -19,7 +16,7 @@ $users=user::getEnattenteUsers();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduLearn Admin - Gestion des inscriptions</title>
+    <title>EduLearn - Cours Frontend</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -33,14 +30,13 @@ $users=user::getEnattenteUsers();
                     <span class="text-2xl font-bold">Youdemy</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="../Apps/adminCategorie.php" class="hover:text-purple-200">Dashboard</a>
-                    <a href="../Apps/admin_page.php" class="hover:text-purple-200">Gestion des Comptes</a>
-                    <a href="../Apps/adminStatistiques.php" class="hover:text-purple-200">Statistiques</a>
-                   
+                    <a href="../Apps/enseignant_page.php" class="hover:text-purple-200">Dashboard</a>
+                    <a href="#" class="hover:text-purple-200">Mes Cours</a>
+                    
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>
-        <p><?php echo htmlspecialchars($_SESSION["user_nom"]); ?></p>
+                <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>
+        <p>Prof.<?php echo htmlspecialchars($_SESSION["user_nom"]); ?></p>
       <?php endif; ?>
                     </span>
                 </div>
@@ -50,41 +46,14 @@ $users=user::getEnattenteUsers();
 
     <!-- Main Content -->
     <main class="flex-grow container mx-auto px-6 py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8">Gestion des demandes d'inscription</h1>
-        
-       
-        <!-- Registration Requests -->
-        <div class="space-y-6">
-            <!-- Request 1 -->
-             <?php foreach($users as $user):?>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div>
-                            <span class="text-lg font-semibold"><?= htmlspecialchars($user->getnom())?></span>
-                            <span class="text-lg font-semibold"><?= htmlspecialchars($user->getprenom())?></span>
-                            <p class="text-sm text-gray-500"><?= htmlspecialchars($user->getmail())?></p>
-                        </div>
-                    </div>
-                    <form class="flex space-x-4" method="POST" action="">
-    <input type="hidden" name="user_id" value="<?= $user->getUserId() ?>">
-    <button type="submit" name="valide" value="valide" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition flex items-center">
-        <i class="fas fa-check mr-2"></i>
-        Valider
-    </button>
-    <button type="submit" name="invalide" value="invalide" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition flex items-center">
-        <i class="fas fa-times mr-2"></i>
-        Refuser
-    </button>
-</form>
-                </div>
-            </div>
-<?php endforeach;?>
-        </div>
+
+                <h2 class="text-2xl font-bold text-gray-800 mb-3"> le nombre des inscriptions dans mes cours sont : <?= htmlspecialchars($inscriptions);?></h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-3"> le nombre totale de mes cours sont : <?= htmlspecialchars($cours);?></h2>
+
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white mt-auto">
+    <footer class="bg-gray-900 text-white mt-12">
         <div class="container mx-auto px-6 py-8">
             <div class="grid md:grid-cols-4 gap-8">
                 <div>

@@ -1,6 +1,4 @@
 <?php
-// require_once '../classes/tags.php';
-// require_once '../classes/cours_tags.php';
 
 abstract class Cours {
     private $cours_id;
@@ -11,7 +9,6 @@ abstract class Cours {
     private $cours_contenu;
     private $categorie_id;
     private $user_id;
-
     private $tags;
 
     public function __construct($cours_id = null, $cours_image = null, $cours_nom = null, $cours_description = null, $cours_type = null, $cours_contenu = null, $categorie_id = null, $user_id = null, $tags = null) {
@@ -38,11 +35,13 @@ abstract class Cours {
 
     abstract public function afficherContenu();
 
+
+
     public static function createCours($data) {
         if ($data['cours_type'] === 'video') {
-            return new VideoCours($data['cours_id'], $data['cours_image'], $data['cours_nom'], $data['cours_description'], $data['cours_type'], $data['cours_contenu'], $data['categorie_id'], $data['user_id'], $data["tags"] ?? null);
+            return new VideoCours($data['cours_id'], $data['cours_image'], $data['cours_nom'], $data['cours_description'], $data['cours_type']?? null, $data['cours_contenu']?? null, $data['categorie_id'], $data['user_id']?? null, $data["tags"] ?? null);
         } elseif ($data['cours_type'] === 'document') {
-            return new DocumentCours($data['cours_id'], $data['cours_image'], $data['cours_nom'], $data['cours_description'], $data['cours_type'], $data['cours_contenu'], $data['categorie_id'], $data['user_id'], $data["tags"] ?? null);
+            return new DocumentCours($data['cours_id'], $data['cours_image'], $data['cours_nom'], $data['cours_description'], $data['cours_type']?? null, $data['cours_contenu']?? null, $data['categorie_id'], $data['user_id']?? null, $data["tags"] ?? null);
         }
     }
 
@@ -54,33 +53,6 @@ abstract class Cours {
         $stmt->execute();
         return $stmt->fetchColumn();
     }
-
-    public static function getElementsPaginé ($limit, $offset, $categorie_id) {
-        $bd = database::getInstance()->getConnection();
-        // Construction sécurisée de la requête
-        $sql = "SELECT cours_id, cours_image, cours_nom, cours_description, categorie_id FROM cours 
-                INNER JOIN users ON users.user_id = cours.user_id
-                WHERE categorie_id = :categorie_id 
-                LIMIT $limit OFFSET $offset";
-    
-        $stmt = $bd->prepare($sql);
-        $stmt->bindParam(':categorie_id', $categorie_id, PDO::PARAM_INT);
-        $stmt->execute();
-    
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $cours = [];
-        foreach ($results as $result) {
-            $cours[] = [
-                'cours_id' => $result['cours_id'],
-                'cours_image' => $result['cours_image'],
-                'cours_nom' => $result['cours_nom'],
-                'cours_description' => $result['cours_description'],
-                'categorie_id' => $result['categorie_id']
-            ];
-        }
-        return $cours;
-    }
-    
 
 
     public static function afficherMescours($categorie_id,$user_id) {
@@ -128,32 +100,27 @@ abstract class Cours {
         $sql = "INSERT INTO cours (cours_image, cours_nom, cours_description, categorie_id, user_id, cours_type, cours_contenu) 
         VALUES (:cours_image, :cours_nom, :cours_description, :categorie_id, :user_id, :cours_type, :cours_lien)";
 $stmt = $db->prepare($sql);
-$stmt->execute([
-    ':cours_image' => $cours_image,
-    ':cours_nom' => $cours_nom,
-    ':cours_description' => $cours_description,
-    ':categorie_id' => $categorie_id,
-    ':user_id' => $user_id,
-    ':cours_type' => $cours_type,
-    ':cours_lien' => $cours_lien,
-]);
-
-        // Retourner l'ID du cours inséré
+$stmt->bindParam(':cours_image',$cours_image);
+$stmt->bindParam(':cours_nom',$cours_nom);
+$stmt->bindParam(':cours_description',$cours_description);
+$stmt->bindParam(':categorie_id',$categorie_id);
+$stmt->bindParam(':user_id',$user_id);
+$stmt->bindParam(':cours_type',$cours_type);
+$stmt->bindParam(':cours_lien',$cours_lien);
+    $stmt->execute();
         return $db->lastInsertId();
     }
 
+    public static function CountCoursEnseignant($user_id) {
+        $bd = database::getInstance()->getConnection();
+        $sql = "SELECT count(*) FROM cours
+         WHERE user_id = :user_id";
+        $stmt = $bd->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
 
-    
-    // public static function afficherPourUpdate($cours_id) {
-    //     $bd = database::getInstance()->getConnection();
-    //     $sql = "SELECT * FROM cours 
-    //             WHERE cours.cours_id = :cours_id ";
-    //     $stmt = $bd->prepare($sql);
-    //     $stmt->bindParam(':cours_id', $cours_id, PDO::PARAM_INT);
-    //     $stmt->execute();
-    //     $results = $stmt->fetch(PDO::FETCH_ASSOC);
-    //     return $results;
-    // }
     public static function UpdateCours($cours_id, $cours_image, $cours_nom, $cours_description, $cours_type, $cours_contenu){
         $bd = database::getInstance()->getConnection();
         $sql = "UPDATE cours 
@@ -181,85 +148,10 @@ $stmt->execute([
         $stmt->bindParam(":cours_id",$cours_id);
         $stmt->execute();
     }
-    
-// public static function TESTER($categorie_id){
-// $bd=database::getInstance()->getConnection();
-// $sql="SELECT * FROM cours WHERE cours.categorie_id=:categorie_id";
-// $stmt=$bd->prepare($sql);
-// $stmt->bindParam(":categorie_id",$categorie_id);
-// $stmt->execute();
-// $result=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// $array=[];
-// foreach($result as $objet){
-// $newobjet=new self($objet['cours_id'], $objet['cours_image'],
-//  $objet['cours_nom'], $objet['cours_description'],
-//   $objet['categorie_id']);
-// $array[]=$newobjet;
-// }
-//    return $array; 
-// }
-
-
-// ----------------------------
-
-
-// public static function afficherCoursComplete($categorie_id) {
-//     $bd = database::getInstance()->getConnection();
-//     $sql="SELECT DISTINCT * FROM cours
-//     inner join cours_tags
-//     ON cours.cours_id= cours_tags.cours_id
-//     inner join tags 
-//     ON cours_tags.tag_id=tags.tag_id
-//     WHERE cours.categorie_id = :categorie_id 
-//      ";
-//     $sql="SELECT DISTINCT cours.*, users.*, tags.*
-// FROM cours
-// INNER JOIN users 
-//     ON users.user_id = cours.user_id
-// INNER JOIN cours_tags 
-//     ON cours.cours_id = cours_tags.cours_id
-// INNER JOIN tags 
-//     ON cours_tags.tag_id = tags.tag_id
-// WHERE cours.categorie_id = :categorie_id 
-//   AND cours.user_id = :user_id;";
-//     $stmt = $bd->prepare($sql);
-//     $stmt->bindParam(":categorie_id",$categorie_id);
-//     $stmt->execute();
-//     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-// }
-
-public static function getAllElementsPaginé ($limit, $offset, $categorie_id) {
-
-    $bd = database::getInstance()->getConnection();
-    $sql = "SELECT cours_id, cours_image, cours_nom, cours_description, categorie_id , user_nom FROM cours 
-            INNER JOIN users ON users.user_id = cours.user_id
-            WHERE categorie_id = :categorie_id 
-            LIMIT $limit OFFSET $offset";
-
-    $stmt = $bd->prepare($sql);
-    $stmt->bindParam(':categorie_id', $categorie_id, PDO::PARAM_INT);
-    $stmt->execute();
-
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $cours = [];
-    foreach ($results as $result) {
-        $cours[] = [
-            'cours_id' => $result['cours_id'],
-            'cours_image' => $result['cours_image'],
-            'cours_nom' => $result['cours_nom'],
-            'cours_description' => $result['cours_description'],
-            'categorie_id' => $result['categorie_id'],
-            'user_nom' => $result['user_nom']
-
-        ];
-    }
-    return $cours;
-}
 
 public static function afficherMescoursStudent($user_id) {
     $bd = database::getInstance()->getConnection();
-    
     $sql = "
     SELECT cours.*, GROUP_CONCAT(tags.tag_nom) as tags
 FROM cours
@@ -271,21 +163,15 @@ INNER JOIN tags
     ON cours_tags.tag_id = tags.tag_id
 WHERE inscriptions.user_id = :user_id
 GROUP BY cours.cours_id";
-    
     $stmt = $bd->prepare($sql);
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmt->execute();
-
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $cours = [];
-    
     foreach ($results as $result) {
         $cours[] = self::createCours($result); 
     }
-
     return $cours;
-
-
 }
 
     
@@ -305,4 +191,4 @@ class DocumentCours extends Cours {
 
 
 
-?>
+

@@ -24,7 +24,7 @@ $categories=categories::getAllCategories();
                     <span class="text-2xl font-bold">EduLearn</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="#" class="hover:text-purple-200">Accueil</a>
+                    <a href="../Apps//user_accueil.php" class="hover:text-purple-200">Accueil</a>
                     <a href="#" class="hover:text-purple-200">Cours</a>
                     <a href="#" class="hover:text-purple-200">À propos</a>
                     <a href="#" class="hover:text-purple-200">Contact</a>
@@ -45,7 +45,7 @@ $categories=categories::getAllCategories();
         <!-- ---------------------------------------------------------------------------- --> 
 <?php foreach($categories as $categorie):?>
             <!-- Frontend Category -->
-            <a href="../Apps/cours_etudiant.php?categorie_id=<?=htmlspecialchars($categorie->getcategorieId())?>&user_id=<?=htmlspecialchars($_SESSION['user_id'])?>" class="group">
+            <a href="../Apps/cours.php?categorie_id=<?=htmlspecialchars($categorie->getcategorieId())?>" class="group">
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
                     <div class="h-48 bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
                         <img src="<?=htmlspecialchars($categorie->getimage())?>" alt="">

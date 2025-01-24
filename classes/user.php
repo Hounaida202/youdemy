@@ -78,21 +78,7 @@ public static function updateStatus($status, $id) {
     $stmt->bindParam(":id", $id);
     $stmt->execute();
 }
-    // public static function getEnattenteUsers(){
-    //     $bd= database::getInstance()->getConnection();
-    //     $sql="SELECT * FROM users WHERE status='en attente'";
-    //     $stmt=$bd->prepare($sql);
-    //     $stmt->execute();
-    //     $arrayUsers=[];
-    //     while ($data=$stmt->fetch(PDO::FETCH_ASSOC)){
-    //         $arrayCategories[]=new self (
-    //             isset( $data['categorie_id'])? $data['categorie_id'] : '',
-    //             isset( $data['categorie_name'])? $data['categorie_name'] : '',
-        
-    //         );
-    //     }
-    //     return $arrayCategories;
-    //     }
+    
     public static function GetUserinfos($email) { 
         $bd = Database::getInstance()->getConnection(); 
         $sql = "SELECT * FROM users WHERE user_email=:email";
@@ -105,7 +91,6 @@ public static function updateStatus($status, $id) {
          
 
     public static function verfierData($email, $password) {
-        //  $bd = Database::getInstance()->getConnection();
           $user = self::GetUserinfos($email); 
           if ($user) { 
             if (password_verify($password, $user['password'])) { 
@@ -120,8 +105,7 @@ public static function updateStatus($status, $id) {
     }}
 
     public static function inscrireStudent($nom,$prenom,$email,$password,$confirme_password,$user_type){
-        // $name=$this->nom;
-        // $nom= user->getnom();
+      
         $bd=Database::getInstance()->getConnection();
         $sql="INSERT INTO users(user_nom,user_prenom,user_email,password,confirme_password,user_type) VALUES 
         (:nom,:prenom,:email,:password,:confirme_password,:user_type)";

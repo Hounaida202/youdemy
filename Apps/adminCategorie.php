@@ -2,17 +2,13 @@
 session_start();
 require_once '../classes/database.php';
 require_once '../classes/user.php';
+require_once '../classes/categories.php';
 
-$users=user::getEnattenteUsers();
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $id = $_POST['user_id'];
-        $status = isset($_POST['valide']) ? 'valide' : 'invalide';
-    
-        user::updateStatus($status, $id);
-        header("Location: ".$_SERVER['PHP_SELF']); 
-        exit;
-    }
-
+if (isset($_POST['supprimer']) && isset($_POST['categorie_id'])) {
+    $categorie_id = $_POST['categorie_id'];
+    $resultat = categories::deleteByIdcategorie($categorie_id);
+}
+$categories=categories::getAllCategories();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -49,37 +45,46 @@ $users=user::getEnattenteUsers();
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-6 py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8">Gestion des demandes d'inscription</h1>
-        
-       
-        <!-- Registration Requests -->
-        <div class="space-y-6">
-            <!-- Request 1 -->
-             <?php foreach($users as $user):?>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div>
-                            <span class="text-lg font-semibold"><?= htmlspecialchars($user->getnom())?></span>
-                            <span class="text-lg font-semibold"><?= htmlspecialchars($user->getprenom())?></span>
-                            <p class="text-sm text-gray-500"><?= htmlspecialchars($user->getmail())?></p>
-                        </div>
+    <main class="flex-grow container mx-auto px-6 py-12">
+    <div class="mb-8 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Catégories</h1>
+            <a href="../Apps/formulaire_admin.php" 
+                class="bg-purple-800 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center">
+                  <i class="fas fa-plus mr-2"></i>
+                     Ajouter une catégorie
+            </a>
+    </div>        
+        <div class="grid md:grid-cols-3 gap-8">
+        <!-- ---------------------------------------------------------------------------- --> 
+<?php foreach($categories as $categorie):?>
+            <!-- Frontend Category -->
+            <a href="../Apps/cours_etudiant.php?categorie_id=<?=htmlspecialchars($categorie->getcategorieId())?>" class="group">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
+                    <div class="h-48 bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                        <img src="<?=htmlspecialchars($categorie->getimage())?>" alt="">
                     </div>
-                    <form class="flex space-x-4" method="POST" action="">
-    <input type="hidden" name="user_id" value="<?= $user->getUserId() ?>">
-    <button type="submit" name="valide" value="valide" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition flex items-center">
-        <i class="fas fa-check mr-2"></i>
-        Valider
-    </button>
-    <button type="submit" name="invalide" value="invalide" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition flex items-center">
-        <i class="fas fa-times mr-2"></i>
-        Refuser
-    </button>
-</form>
+                    <div class="p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2"><?=htmlspecialchars($categorie->getnom())?></h2>
+                        <p class="text-gray-600"><?=htmlspecialchars($categorie->getdescription())?></p>
+
+                        <form method="POST" action="" style="margin-top: 20px;" class="flex space-x-2 ">
+                    <input type="hidden" name="categorie_id" value="<?php echo htmlspecialchars($categorie->getcategorieId()) ?>">
+                <a href="../Apps/modifier_categorie.php?categorie_id=<?=  htmlspecialchars($categorie->getcategorieId()) ?>" name="modifier" value="modifier" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition flex items-center">
+                    <i class="fas fa-edit mr-2"></i>
+                    Modifier
+                </a>
+                <button name="supprimer" value="supprimer" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition flex items-center">
+                    <i class="fas fa-trash-alt mr-2"></i>
+                    Supprimer
+                </button>
+                </form>
+
+                    </div>
                 </div>
-            </div>
-<?php endforeach;?>
+            </a>
+            <?php endforeach;?>
+
+<!-- ---------------------------------------------------------------------------- -->
         </div>
     </main>
 

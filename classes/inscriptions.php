@@ -58,5 +58,30 @@ public static function dejaInscré($cours_id,$user_id) {
     return $result > 0;
 }
 
+public static function inscréAmescours($user_id) {
+    $bd = database::getInstance()->getConnection();
+    $sql = "SELECT * FROM cours
+    INNER JOIN inscriptions 
+    ON inscriptions.cours_id=cours.cours_id
+    INNER JOIN users 
+    ON users.user_id=inscriptions.user_id
+    WHERE cours.user_id = :user_id";
+    $stmt = $bd->prepare($sql);
+    $stmt->bindParam(":user_id", $user_id);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $results;
+}
+
+public static function CountinscriptionsEnseignant($user_id) {
+    $bd = database::getInstance()->getConnection();
+    $sql = "SELECT count(*) FROM inscriptions
+    INNER JOIN cours on cours.cours_id=inscriptions.cours_id
+     WHERE cours.user_id = :user_id";
+    $stmt = $bd->prepare($sql);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
 
 }

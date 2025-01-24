@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cours_lien = $_POST['cours_lien'];
     $tags_selected = isset($_POST['tags']) ? $_POST['tags'] : [];
 
-    // Vérification du lien
     $isValid = false;
     if ($cours_type === 'video') {
         $isValid = preg_match('/(youtube\.com|vimeo\.com)/i', $cours_lien);
@@ -27,9 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($isValid) {
-        // Insérer le cours
         $cours_id = cours::insertcours($cours_image, $cours_nom, $cours_description, $categorie_id, $user_id, $cours_type, $cours_lien);
-
+        var_dump($cours_id);
         if ($cours_id) {
             if (!empty($tags_selected)) {
                 foreach ($tags_selected as $tag_id) {
@@ -45,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-// Récupération de tous les tags
 $tags = Tags::getAlltags();
 
 ?>
@@ -73,7 +70,6 @@ $tags = Tags::getAlltags();
                 <div class="hidden md:flex space-x-8">
                     <a href="../Apps/enseignant_page.php" class="hover:text-purple-200">Dashboard</a>
                     <a href="#" class="hover:text-purple-200">Mes Cours</a>
-                    <a href="#" class="hover:text-purple-200">Statistiques</a>
                 </div>
                 <div class="flex items-center space-x-4">
                 <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>

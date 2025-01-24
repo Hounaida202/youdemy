@@ -4,10 +4,7 @@ session_start();
 require_once '../classes/database.php';
 require_once '../classes/cours.php';
 require_once '../classes/inscriptions.php';
-// $user_id = $_GET['user_id'];
-// $cours_id=$_GET['cours_id'];
-// $nom=$_POST['nom'];
-// $prenom=$_POST['prenom'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cours_id = $_GET['cours_id'] ?? null;
     $user_id = $_GET['user_id'] ?? null;
@@ -51,8 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="hidden md:flex space-x-8">
                     <a href="#" class="hover:text-purple-200">Mes cours</a>
-                    <a href="#" class="hover:text-purple-200">Catalogue</a>
-                    <a href="#" class="hover:text-purple-200">Profil</a>
+                    <a href="../Apps/etudiant_page.php" class="hover:text-purple-200">Catalogue</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>

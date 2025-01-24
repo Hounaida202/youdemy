@@ -3,9 +3,7 @@ require_once '../classes/database.php';
 require_once '../classes/user.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // if(!empty($_POST['firstname']) && !empty($_POST['lastname']) && !empty($_POST['email'])
-    // && !empty($_POST['password']) && !empty($_POST['confirm-password']) && !empty($_POST['role']) ){
-        // echo "<script>alert('remplir les champs!');</script>";
+   
 
     $nom = $_POST["firstname"];
     $prenom = $_POST["lastname"];
@@ -15,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_type = $_POST["role"];
 
     $errors = [];
-    // $user = new user($nom, $prenom);
 
     if (user::verifieremail($email)===true) {
         $errors[] = "L'email existe déjà.";

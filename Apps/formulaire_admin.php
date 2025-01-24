@@ -2,16 +2,17 @@
 session_start();
 require_once '../classes/database.php';
 require_once '../classes/user.php';
+require_once '../classes/categories.php';
 
-$users=user::getEnattenteUsers();
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $id = $_POST['user_id'];
-        $status = isset($_POST['valide']) ? 'valide' : 'invalide';
-    
-        user::updateStatus($status, $id);
-        header("Location: ".$_SERVER['PHP_SELF']); 
-        exit;
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $categorie_image = $_POST['categorie_image'];
+    $categorie_nom = $_POST['categorie_nom'];
+    $categorie_description = $_POST['categorie_description'];
+   
+    $categorie_id = categories::inserCtegorie($categorie_image, $categorie_nom, $categorie_description);
+
+ 
+}
 
 ?>
 <!DOCTYPE html>
@@ -35,7 +36,7 @@ $users=user::getEnattenteUsers();
                 <div class="hidden md:flex space-x-8">
                     <a href="../Apps/adminCategorie.php" class="hover:text-purple-200">Dashboard</a>
                     <a href="../Apps/admin_page.php" class="hover:text-purple-200">Gestion des Comptes</a>
-                    <a href="../Apps/adminStatistiques.php" class="hover:text-purple-200">Statistiques</a>
+                    <a href="" class="hover:text-purple-200">Statistiques</a>
                    
                 </div>
                 <div class="flex items-center space-x-4">
@@ -49,40 +50,43 @@ $users=user::getEnattenteUsers();
     </nav>
 
     <!-- Main Content -->
+    
     <main class="flex-grow container mx-auto px-6 py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8">Gestion des demandes d'inscription</h1>
+        <div class="mb-8 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Ajouter une Catégorie</h1>
+        </div>
         
-       
-        <!-- Registration Requests -->
-        <div class="space-y-6">
-            <!-- Request 1 -->
-             <?php foreach($users as $user):?>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div>
-                            <span class="text-lg font-semibold"><?= htmlspecialchars($user->getnom())?></span>
-                            <span class="text-lg font-semibold"><?= htmlspecialchars($user->getprenom())?></span>
-                            <p class="text-sm text-gray-500"><?= htmlspecialchars($user->getmail())?></p>
-                        </div>
-                    </div>
-                    <form class="flex space-x-4" method="POST" action="">
-    <input type="hidden" name="user_id" value="<?= $user->getUserId() ?>">
-    <button type="submit" name="valide" value="valide" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition flex items-center">
-        <i class="fas fa-check mr-2"></i>
-        Valider
-    </button>
-    <button type="submit" name="invalide" value="invalide" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition flex items-center">
-        <i class="fas fa-times mr-2"></i>
-        Refuser
-    </button>
-</form>
+        <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+            <form class="space-y-6" method="POST" action="">
+                <div>
+                    <label for="titre" class="block text-sm font-medium text-gray-700 mb-2">Titre de la Catégorie</label>
+                    <input type="text" id="titre" name="categorie_nom" required 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
-            </div>
-<?php endforeach;?>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="description" name="categorie_description" rows="4" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Image de la Catégorie</label>
+                    <div class="flex items-center">
+                        <input type="text" id="image" name="categorie_image" accept="image/*" required 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit" 
+                        class="w-full bg-purple-800 text-white py-3 rounded-lg hover:bg-purple-900 transition duration-300">
+                        Ajouter Catégorie
+                    </button>
+                </div>
+            </form>
         </div>
     </main>
-
     <!-- Footer -->
     <footer class="bg-gray-900 text-white mt-auto">
         <div class="container mx-auto px-6 py-8">

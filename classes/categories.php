@@ -43,5 +43,37 @@ public static function getAllCategories(){
     return $categories; 
 }
 
+public static function inserCtegorie($categorie_image, $categorie_nom, $categorie_description){
+    $bd = database::getInstance()->getConnection();
+    $sql = "INSERT INTO categories(categorie_image,categorie_nom,categorie_description)
+    VALUES(:categorie_image,:categorie_nom,:categorie_description)";
+    $stmt = $bd->prepare($sql);
+    $stmt->bindParam(":categorie_image",$categorie_image);
+    $stmt->bindParam(":categorie_nom",$categorie_nom);
+    $stmt->bindParam(":categorie_description",$categorie_description);
+        $stmt->execute();
+}
+public static function deleteByIdcategorie($categorie_id){
+    $bd = database::getInstance()->getConnection();
+    $sql="DELETE FROM categories WHERE categories.categorie_id=:categorie_id";
+    $stmt=$bd->prepare($sql);
+    $stmt->bindParam(":categorie_id",$categorie_id);
+    $stmt->execute();
+}
+public static function UpdateCategorie( $categorie_image, $categorie_nom, $categorie_description,$categorie_id){
 
+    $bd = database::getInstance()->getConnection();
+    $sql = "UPDATE categories 
+    SET categorie_image = :categorie_image, 
+        categorie_nom = :categorie_nom, 
+        categorie_description = :categorie_description
+        
+    WHERE categorie_id = :categorie_id";
+$stmt=$bd->prepare($sql);
+$stmt->bindParam(':categorie_image', $categorie_image);
+$stmt->bindParam(':categorie_nom', $categorie_nom);
+$stmt->bindParam(':categorie_description', $categorie_description);
+$stmt->bindParam(':categorie_id', $categorie_id);
+$stmt->execute();
+}
 }

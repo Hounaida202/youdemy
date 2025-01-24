@@ -3,15 +3,7 @@
 require_once '../classes/database.php';
 require_once '../classes/user.php';
 
-// if ($_SERVER['REQUEST_METHOD'] === 'POST')
-// {
-//     $email=$_POST['email'];
-//     $password=$_POST['password'];
-// $user=user::verfierData($email,$password);
-// if($user){
-//     $verifyuser=user::GetUserinfos($email,$password);
-// }
-// }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];

@@ -26,8 +26,7 @@ $categories=categories::getAllCategories();
                 <div class="hidden md:flex space-x-8">
                     <a href="#" class="hover:text-purple-200">Dashboard</a>
                     <a href="#" class="hover:text-purple-200">Mes Cours</a>
-                    <a href="#" class="hover:text-purple-200">Étudiants</a>
-                    <a href="#" class="hover:text-purple-200">Messages</a>
+                    
                 </div>
                 <div class="flex items-center space-x-4">
                 <span class="text-sm"> <?php if (isset($_SESSION['user_nom'])): ?>
@@ -48,11 +47,11 @@ $categories=categories::getAllCategories();
                     <i class="fas fa-th-large"></i>
                     <span>Vue d'ensemble</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:text-purple-800">
+                <a href="../Apps/CoursInscré.php" class="flex items-center space-x-3 text-gray-600 hover:text-purple-800">
                     <i class="fas fa-book"></i>
-                    <span>Gestion des cours</span>
+                    <span>Inscriptions</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:text-purple-800">
+                <a href="../Apps//statistique.php" class="flex items-center space-x-3 text-gray-600 hover:text-purple-800">
                     <i class="fas fa-chart-bar"></i>
                     <span>Statistiques</span>
                 </a>

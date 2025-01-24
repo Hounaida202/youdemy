@@ -2,14 +2,24 @@
 require_once '../classes/database.php';
 require_once '../classes/categories.php';
 require_once '../classes/cours.php';
+require_once '../classes/lescours.php';
+
+
 
 $limit = 3;
 $pageActuelle = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($pageActuelle - 1) * $limit;
 $categorie_id=$_GET['categorie_id'];
 $totalCours=cours::CountCours($categorie_id);
-$cours = cours::getElementsPaginé($limit,$offset,$categorie_id);
+$cours = lescours::getElementsPaginé($limit,$offset,$categorie_id);
 $totalPages = ceil($totalCours / $limit);
+
+
+$nomRecherche = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -30,6 +40,12 @@ $totalPages = ceil($totalCours / $limit);
                     <i class="fas fa-graduation-cap text-2xl mr-2"></i>
                     <span class="text-2xl font-bold">Youdemy</span>
                 </div>
+                <div class="search-bar">
+        <form method="GET" action="">
+            <input type="text" name="search" placeholder="Rechercher un cours..." value="<?= htmlspecialchars($nomRecherche) ?>">
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
                 <div class="hidden md:flex space-x-8">
                     <a href="../Apps/user_accueil.php" class="hover:text-purple-200">Accueil</a>
                     <a href="#" class="hover:text-purple-200">Cours</a>
@@ -37,8 +53,8 @@ $totalPages = ceil($totalCours / $limit);
                     <a href="#" class="hover:text-purple-200">Contact</a>
                 </div>
                 <div class="flex space-x-4">
-                    <a href="login.html" class="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition">Connexion</a>
-                    <a href="signup.html" class="px-4 py-2 bg-white text-purple-800 rounded-lg hover:bg-purple-100 transition">Inscription</a>
+                    <a href="../Apps/login.php" class="px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition">Connexion</a>
+                    <a href="../Apps/signup.php" class="px-4 py-2 bg-white text-purple-800 rounded-lg hover:bg-purple-100 transition">Inscription</a>
                 </div>
             </div>
         </div>
@@ -68,10 +84,10 @@ $totalPages = ceil($totalCours / $limit);
                 </div>
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-4">
-                        <h2 class="text-2xl font-bold text-gray-800"><?= htmlspecialchars($cour['cours_nom'])?></h2>
+                        <h2 class="text-2xl font-bold text-gray-800"><?php echo htmlspecialchars($cour->getnom())?></h2>
                         <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Débutant</span>
                     </div>
-                    <p class="text-gray-600 mb-4"><?= htmlspecialchars($cour['cours_description'])?></p>
+                    <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($cour->getdescription())?></p>
                     <ul class="text-gray-600 mb-6 space-y-2">
                         <li class="flex items-center"><i class="fas fa-clock mr-2 text-blue-500"></i>20 heures de cours</li>
                         <li class="flex items-center"><i class="fas fa-book mr-2 text-blue-500"></i>15 chapitres</li>
